@@ -18,7 +18,7 @@ public class DisplayResult {
     }
 
     /**
-     * 解析結果を表示する処理クラスのコンストラクタ。
+     * アプリケーションの標準化オプションに従い、解析結果を表示する
      * @param fileAnalyzer アプリケーションの標準化オプション {@code FileAnalyzer}
      */
     public void printAndAggregateResult(FileAnalyzer fileAnalyzer) {
@@ -27,7 +27,7 @@ public class DisplayResult {
     }
 
     /**
-     * 解析結果を表示する処理クラスのコンストラクタ。
+     * アプリケーションの標準化オプションに従い、複数ファイルがある場合、合計の解析結果を表示する
      */
     public void printTotalIfManyFiles() {
         List<String> parts = new ArrayList<>();
