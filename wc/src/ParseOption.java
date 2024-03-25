@@ -1,9 +1,4 @@
-package com.gm;
-
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,40 +7,50 @@ import java.util.List;
 public class ParseOption {
     public boolean countLines = false;
     public boolean countWords = false;
-    public boolean countBytes = false; // Added to handle bytes count
+    public boolean countBytes = false;
     public boolean countCharacters = false;
     public boolean findMaxLineLength = false;
     public boolean files0FromFlag = false;
     public List<String> filePaths = new ArrayList<>();
+    public String errorMessage = null;
 
+    /**
+     * コマンドライン引数を解析してアプリケーションの標準化オプションを構成する。
+     * @param args コマンドライン引数を表す {@code String} オブジェクトの配列
+     */
     public ParseOption(String[] args) {
-        List<String> argsList = new ArrayList<>();
-        for (int i = 0; i < args.length; i++) {
-            String arg = args[i];
-            argsList.addAll(Arrays.asList(arg.split("=")));
-        }
-
-        for (int i = 0; i < argsList.size(); i++) {
-            String arg = argsList.get(i);
-            if (arg.equals("--files0-from")) {
-                files0FromFlag = true;
-                if (++i < argsList.size()) {
-                    filePaths = this.processFile0From(argsList.get(i));
-                }
-            } else if (arg.startsWith("-")) {
-                parseOptions(arg);
-            } else {
-                filePaths.add(arg);
+        try {
+            List<String> argsList = new ArrayList<>();
+            for (int i = 0; i < args.length; i++) {
+                String arg = args[i];
+                argsList.addAll(Arrays.asList(arg.split("=")));
             }
+
+            for (int i = 0; i < argsList.size(); i++) {
+                String arg = argsList.get(i);
+                if (arg.equals("--files0-from")) {
+                    files0FromFlag = true;
+                    if (++i < argsList.size()) {
+                        filePaths = this.processFile0From(argsList.get(i));
+                    }
+                } else if (arg.startsWith("-")) {
+                    parseOptions(arg);
+                } else {
+                    filePaths.add(arg);
+                }
+            }
+
+            //コマンドライン引数を渡さない場合、行数、ワード、バイト数を表示する
+            if (!countLines && !countWords && !countCharacters && !countBytes && !findMaxLineLength) {
+                countLines = countWords = countBytes = true;
+            }
+        } catch (Exception ex) {
+            this.errorMessage = ex.getMessage();
         }
 
-//        Default values
-        if (!countLines && !countWords && !countCharacters && !countBytes && !findMaxLineLength) {
-            countLines = true;
-        }
     }
 
-    private void parseOptions(String arg) {
+    private void parseOptions(String arg) throws Exception {
         if (arg.startsWith("--")) {
             switch (arg) {
                 case "--lines":
@@ -64,7 +69,7 @@ public class ParseOption {
                     findMaxLineLength = true;
                     break;
                 default:
-                    System.err.println("Unknown option: " + arg);
+                    throw new Exception("Unknown option" + arg);
             }
         } else {
             for (int i = 1; i < arg.length(); i++) { // Start at 1 to skip the '-'
@@ -76,23 +81,24 @@ public class ParseOption {
                         countWords = true;
                         break;
                     case 'm':
-                    case 'c': // Treat 'c' as counting characters/bytes
-                        countCharacters = countBytes = true;
+                        countCharacters = true;
+                        break;
+                    case 'c':
+                        countBytes = true;
                         break;
                     case 'L':
                         findMaxLineLength = true;
                         break;
                     default:
-                        throw new Error("unknow option" + arg.charAt(i));
-//                        System.err.println("Unknown option: " + arg.charAt(i));
+                        throw new Exception("invalid option" + arg.charAt(i));
                 }
             }
         }
     }
 
-    private ArrayList<String> processFile0From(String args) {
-        boolean readFromStdIn = args.equals("-");
-        ArrayList<String> filePaths = new ArrayList<>();
+    private List<String> processFile0From(String args) throws Exception {
+        boolean readFromStdIn = args.equals("-") || args.equals("");
+        List<String> filePaths = new ArrayList<>();
         try {
             if (readFromStdIn) {
                 BufferedReader stdInReader = new BufferedReader(new InputStreamReader(System.in));
@@ -117,7 +123,11 @@ public class ParseOption {
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            if(e instanceof FileNotFoundException) {
+                throw new Exception("File not found when reading input: " + args);
+            } else {
+                throw new Exception("Unknown error when reading input: " + args);
+            }
         }
         return filePaths;
     }
