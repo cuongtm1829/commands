@@ -77,7 +77,7 @@ public class ParseOption {
                     throw new Exception("Unknown option" + arg);
             }
         } else {
-            for (int i = 1; i < arg.length(); i++) { // Start at 1 to skip the '-'
+            for (int i = 1; i < arg.length(); i++) {
                 switch (arg.charAt(i)) {
                     case 'l':
                         countLines = true;
