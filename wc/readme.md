@@ -1,53 +1,69 @@
-# WC Command Line Tool - Java Implementation
+# gm.WC Command Line Tool - Java Implementation
 
-This repository contains Java implementation of the Unix command line tool 'wc'. The 'wc' tool is commonly used to count the number of lines, words, and characters in a file. With this Java version, you can easily analyze text files and obtain valuable insights about their contents.
+このリポジトリには、Unix コマンド ライン ツール「wc」の Java 実装が含まれています。 「wc」ツールは、ファイル内の行数、単語数、
+文字数を数えるためによく使用されます。 この Java バージョンを使用すると、テキスト ファイルを簡単に分析し、その内容に関する貴重な洞察を得ることができます。
 
-## Features
+## 機能
 
-- Count the number of lines in a file
-- Count the number of words in a file
-- Count the number of characters (with and without spaces) in a file
-- Identify the longest line in a file
+- ファイルの行数をカウントする
+- ファイルのワード（スペースで分けられる）をカウントする
+- ファイルのCharをカウントする
+- ファイルのバイト数をカウントする
+- ファイルの行の最大長さを抽出する
 
-## Getting Started
+## 使用ガイド
 
-### Prerequisites
+### 前提条件
 
-- Java Development Kit (JDK) installed on your machine
-- Text file(s) to analyze
+- Java Development Kit (JDK) はインストールされている（Java 8以上）
+- 解析テキストファイル（dataフォルダーにサンプルがある）
 
-### Usage
+### 確認方法
 
-1. Clone this repository to your local machine.
+1. レポジトリーをクローンする.
    ```bash
    git clone https://github.com/your-username/wc-command-line-tool.git
    ```
-2. Navigate to the project directory.
+2. プロジェクトのフォルダーへ移動する
    ```bash
-   cd wc-command-line-tool
+   cd wc
    ```
-3. Compile the Java source code.
+3. Javaファイルソースコードをコンパイルする
    ```bash
-   javac WC.java
+   javac -d out src/gm/*.java
    ```
-4. Run the program and provide the path to the text file(s) you want to analyze.
+4. outフォルダーへ移動し、分析ファイルを指定し、プログラムを実行する
    ```bash
-   java WC /path/to/your/file.txt
+   cd out
+   java gm.WC /path/to/your/file.txt
    ```
-### Example
-Let's say we have a text file called sample.txt with the following content:
+   例：
+   ```bash
+   cd out
+   java gm.WC -lw ../data/data.txt
+   ```
 
-  ```text
-    Copy code
-    Hello, world!
-    This is a sample text file.
-    It contains multiple lines.
-  ```
+## 工夫した点
 
-Running the command:
-  ```bash
-  java WC sample.txt
-  ```
-The output will be:
+### 保守しやすいクラス構成をしている。
 
-![Screenshot](https://github.com/Ketan-Pal/wc-command-line-tool/blob/main/Screenshot.jpg?raw=true)
+　　WCプログラムは以下のクラスから構成されるので、複雑な要件が発生するときに、専用のファイルで修正すればよい。　　
+
+   ParseOption：入力のテキストからアプリケーションの標準オプションを抽出するクラス。　　
+
+   FileAnalyzer：ファイルを分析するロジックが入るクラス。分析ロジックはより細かくしたい場合、このクラスに修正内容を追加していく。
+   　　　　　　　　　例：日本語のワードのカウントするロジックを追加する　　　
+
+   DisplayResult：分析結果を表示するクラス。表示に関するロジックを改善する場合、このクラスに修正内容を追加していく。
+   　　　　　　　　　例：見やすいように、ボーダーがあるテーブルで表示する　　
+
+   WC：メインクラスです。シンプルなチェックを行うあと、上記のクラスを繋がってプログラムを行為性する。
+　　
+### 例外をキャッチし、処理をできるだけすすめるようする。
+　　実行中に例外が発生しても、プログラムが終了することなく進めるために、例外をキャッチし、エラーメッセージでユーザーに通知する。
+
+### コードを読みやすいにする
+   コードを読みやすいため、変数の名前をつけている。
+　　わかりにくい文字をコンスタントとして宣言し、使っている：例：`NULL_CHARACTER = "\0";`
+
+

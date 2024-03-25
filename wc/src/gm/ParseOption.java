@@ -1,5 +1,9 @@
+package gm;
+
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -14,15 +18,16 @@ public class ParseOption {
     public List<String> filePaths = new ArrayList<>();
     public String errorMessage = null;
 
+    private static final String NULL_CHARACTER = "\0";
+
     /**
-     * コマンドライン引数を解析してアプリケーションの標準化オプションを構成する。
+     * コマンドライン引数を解析してアプリケーションの標準オプションを構成する。
      * @param args コマンドライン引数を表す {@code String} オブジェクトの配列
      */
     public ParseOption(String[] args) {
         try {
             List<String> argsList = new ArrayList<>();
-            for (int i = 0; i < args.length; i++) {
-                String arg = args[i];
+            for (String arg : args) {
                 argsList.addAll(Arrays.asList(arg.split("=")));
             }
 
@@ -107,20 +112,12 @@ public class ParseOption {
                     filePaths.add(line);
                 }
             } else {
-                FileInputStream fis = new FileInputStream(args);
-                byte[] buffer = new byte[1024];
-                int length;
-                StringBuilder sb = new StringBuilder();
-                while ((length = fis.read(buffer)) > -1) {
-                    sb.append(new String(Arrays.copyOf(buffer, length), StandardCharsets.UTF_8));
-                }
-                fis.close();
+                String sb = new String(Files.readAllBytes(Paths.get(args)), StandardCharsets.UTF_8);
 
-                // Splitting the string by null character
-                String[] fileNames = sb.toString().split("\0");
-                for (String fileName : fileNames) {
-                    filePaths.add(fileName);
-                }
+
+                // Nullキャラクターで文字列をファイルパスに分解する
+                String[] fileNames = sb.split(NULL_CHARACTER);
+                filePaths.addAll(new ArrayList<>(Arrays.asList(fileNames)));
             }
         } catch (IOException e) {
             if(e instanceof FileNotFoundException) {

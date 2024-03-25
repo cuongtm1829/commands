@@ -1,3 +1,5 @@
+package gm;
+
 import java.util.Arrays;
 
 public class WC {

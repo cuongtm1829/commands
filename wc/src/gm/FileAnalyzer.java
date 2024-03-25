@@ -1,3 +1,5 @@
+package gm;
+
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
@@ -13,8 +15,8 @@ public class FileAnalyzer {
     public String errorMessage;
 
     /**
-     * アプリケーションの標準化オプションとファイルパスを渡し、オプションの指定に従う解析処理を行う
-     * @param option アプリケーションの標準化オプション {@code ParseOption}
+     * アプリケーションの標準オプションとファイルパスを渡し、オプションの指定に従う解析処理を行う
+     * @param option アプリケーションの標準オプション {@code gm.ParseOption}
      * @param filePathIn 解析されるファイルのパス {@code String}
      */
     public FileAnalyzer(ParseOption option, String filePathIn) {
@@ -52,6 +54,7 @@ public class FileAnalyzer {
             }
         }
     }
+
     private long countLines(Path path) throws IOException {
         return Files.lines(path).count();
     }

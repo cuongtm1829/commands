@@ -1,3 +1,5 @@
+package gm;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,15 +13,17 @@ public class DisplayResult {
 
     /**
      * 解析結果を表示する処理クラスのコンストラクタ。
-     * @param option アプリケーションの標準化オプション {@code ParseOption}
+     *
+     * @param option アプリケーションの標準オプション {@code gm.ParseOption}
      */
     public DisplayResult(ParseOption option) {
         this.option = option;
     }
 
     /**
-     * アプリケーションの標準化オプションに従い、解析結果を表示する
-     * @param fileAnalyzer アプリケーションの標準化オプション {@code FileAnalyzer}
+     * アプリケーションの標準オプションに従い、解析結果を表示する
+     *
+     * @param fileAnalyzer アプリケーションの標準オプション {@code gm.FileAnalyzer}
      */
     public void printAndAggregateResult(FileAnalyzer fileAnalyzer) {
         this.print(fileAnalyzer);
@@ -27,11 +31,11 @@ public class DisplayResult {
     }
 
     /**
-     * アプリケーションの標準化オプションに従い、複数ファイルがある場合、合計の解析結果を表示する
+     * 複数ファイルがある場合、アプリケーションの標準オプションに従い、合計の解析結果を表示する
      */
     public void printTotalIfManyFiles() {
         List<String> parts = new ArrayList<>();
-        if(option.filePaths.size() > 1) {
+        if (option.filePaths.size() > 1) {
             if (option.countLines) {
                 parts.add(String.valueOf(this.lines));
             }
@@ -54,7 +58,7 @@ public class DisplayResult {
     }
 
     private void print(FileAnalyzer fileAnalyzer) {
-        if(fileAnalyzer.errorMessage != null) {
+        if (fileAnalyzer.errorMessage != null) {
             System.out.println(fileAnalyzer.errorMessage);
         }
         List<String> parts = new ArrayList<>();
