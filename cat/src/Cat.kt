@@ -1,11 +1,5 @@
 import java.io.File
-import java.nio.file.StandardWatchEventKinds
-import java.nio.file.FileSystems
-
-//class SimpleArgParser(private val args: Array<String>) {
-//    fun hasOption(option: String): Boolean = args.contains(option)
-//    fun parsePositionalArgument(): String? = args.find { !it.startsWith("-") }
-//}
+import java.lang.Exception
 
 class OptionsParser {
     var numberNonBlank: Boolean = false
@@ -41,42 +35,49 @@ class OptionsParser {
             'T' -> showTabs = true
             'u' -> {} // 無視
             'v' -> showNonPrinting = true
-            else -> errorMessage = "Unknown option: -$option"
+            else -> {
+                throw Exception("Unknown option: -$option")
+            }
         }
     }
 
     fun parseOptions(options: Array<String>) {
-        options.forEach { option ->
-            if (!option.startsWith("-")) {
-                filePaths.add(option)
-            } else {
-                when {
-                    option.startsWith("--") -> {
-                        when (option) {
-                            "--show-all" -> {
-                                showNonPrinting = true
-                                showEnds = true
-                                showTabs = true
+        try {
+            options.forEach { option ->
+                if (!option.startsWith("-")) {
+                    filePaths.add(option)
+                } else {
+                    when {
+                        option.startsWith("--") -> {
+                            when (option) {
+                                "--show-all" -> {
+                                    showNonPrinting = true
+                                    showEnds = true
+                                    showTabs = true
+                                }
+                                "--number-nonblank" -> numberNonBlank = true
+                                "--show-ends" -> showEnds = true
+                                "--number" -> number = true
+                                "--squeeze-blank" -> squeezeBlank = true
+                                "--show-tabs" -> showTabs = true
+                                "--show-nonprinting" -> showNonPrinting = true
+                                "--help" -> help = true
+                                "--version" -> version = true
+                                else -> {
+                                    throw Exception("Unknown option: -$option")
+                                }
                             }
-                            "--number-nonblank" -> numberNonBlank = true
-                            "--show-ends" -> showEnds = true
-                            "--number" -> number = true
-                            "--squeeze-blank" -> squeezeBlank = true
-                            "--show-tabs" -> showTabs = true
-                            "--show-nonprinting" -> showNonPrinting = true
-                            "--help" -> help = true
-                            "--version" -> version = true
-                            else -> errorMessage = "Unknown option: -$option"
                         }
-                    }
-                    option.startsWith("-") -> {
-                        option.drop(1).forEach { charOption ->
-                            setOption(charOption)
+                        option.startsWith("-") -> {
+                            option.drop(1).forEach { charOption ->
+                                setOption(charOption)
+                            }
                         }
                     }
                 }
             }
-
+        } catch (e: Exception) {
+            println("Caught an exception: ${e.message}")
         }
 
         // -bは-nを上書きする
@@ -86,11 +87,14 @@ class OptionsParser {
     }
 }
 
-
-class Main() {
+class Cat() {
     fun main(args: Array<String>) {
         val parser = OptionsParser()
         parser.parseOptions(args)
+
+        if(parser.errorMessage != null) {
+            println(parser.errorMessage)
+        }
 
         val filePaths = parser.filePaths
 
@@ -104,7 +108,6 @@ class Main() {
         }
     }
 
-    @OptIn(ExperimentalStdlibApi::class)
     fun printFileContent(file: File, parser: OptionsParser) {
         file.useLines { lines ->
             var lineNumber = 1
@@ -124,16 +127,28 @@ class Main() {
                 if (parser.numberNonBlank && line.isNotBlank() || parser.number) processedLine = "${lineNumber++}: $processedLine"
                 if (parser.showNonPrinting) {
                     processedLine = processedLine.map { char ->
-                        if ((char in '\u0000'..'\u001F' || char in '\u007F'..'\u009F') && char != '\t' && char != '\n') "^${char.code + 64}" else char.toString()
+                        if (char.isNonPrinting()) "^${convertNonPrinting(char)}" else char.toString()
                     }.joinToString("")
                 }
                 println(processedLine)
             }
         }
     }
+
+    @OptIn(ExperimentalStdlibApi::class)
+    fun Char.isNonPrinting(): Boolean = this.code < 32 || this.code == 127
+
+    @OptIn(ExperimentalStdlibApi::class)
+    fun convertNonPrinting(char: Char): String {
+        return when (char.code) {
+            in 0..31 -> "^${(char + 64).toChar()}" //　制御文字をキャレット表記に変換する
+            127 -> "^?" // DELキャラクター
+            else -> char.toString()
+        }
+    }
 }
 
 fun main(args: Array<String>) {
-    val app = Main()
-    app.main(arrayOf("-tn", "-e", "data/data.txt"))
+    val app = Cat()
+    app.main(arrayOf("-tn", "-A", "data/files.txt", "data/files.txt"))
 }
