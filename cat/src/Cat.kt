@@ -94,45 +94,66 @@ class Cat() {
 
         if(parser.errorMessage != null) {
             println(parser.errorMessage)
+            return
         }
 
-        val filePaths = parser.filePaths
+        //show version and help
 
-        for (filePath in filePaths) {
-            val file = File(filePath)
-            if (file.exists()) {
-                printFileContent(file, parser)
-            } else {
-                println("$filePath: No such file or directory")
+        val filePaths = parser.filePaths
+        if(filePaths.size > 0) {
+            for (filePath in filePaths) {
+                val file = File(filePath)
+                if (file.exists()) {
+                    printFileContent(file, parser)
+                } else {
+                    println("$filePath: No such file or directory")
+                }
+            }
+        } else {
+            val lineNumber = MutableRef(1)
+            val lastLineWasBlank = MutableRef(false)
+            while (true) {
+                val line = readLine() ?: break
+                printLineContent(line, parser, lastLineWasBlank, lineNumber)
+            }
+        }
+
+    }
+
+    class MutableRef<T>(var value: T)
+
+
+    fun printFileContent(file: File, parser: OptionsParser) {
+        file.useLines { lines ->
+            val lineNumber = MutableRef(1)
+            val lastLineWasBlank = MutableRef(false)
+
+            for (line in lines) {
+                if(lastLineWasBlank.value) continue
+                printLineContent(line, parser, lastLineWasBlank, lineNumber)
+
             }
         }
     }
 
-    fun printFileContent(file: File, parser: OptionsParser) {
-        file.useLines { lines ->
-            var lineNumber = 1
-            var lastLineWasBlank = false
-
-            for (line in lines) {
-                if (parser.squeezeBlank && line.isBlank()) {
-                    if (lastLineWasBlank) continue
-                    lastLineWasBlank = true
-                } else {
-                    lastLineWasBlank = false
-                }
-
-                var processedLine = line
-                if (parser.showEnds) processedLine += "$"
-                if (parser.showTabs) processedLine = processedLine.replace("\t", "^I")
-                if (parser.numberNonBlank && line.isNotBlank() || parser.number) processedLine = "${lineNumber++}: $processedLine"
-                if (parser.showNonPrinting) {
-                    processedLine = processedLine.map { char ->
-                        if (char.isNonPrinting()) "^${convertNonPrinting(char)}" else char.toString()
-                    }.joinToString("")
-                }
-                println(processedLine)
-            }
+    fun printLineContent(line: String, parser: OptionsParser, lastLineWasBlank: MutableRef<Boolean>, lineNumber: MutableRef<Int>) {
+        if (parser.squeezeBlank && line.isBlank()) {
+            if (lastLineWasBlank.value) return
+            lastLineWasBlank.value = true
+        } else {
+            lastLineWasBlank.value = false
         }
+
+        var processedLine = line
+        if (parser.showEnds) processedLine += "$"
+        if (parser.showTabs) processedLine = processedLine.replace("\t", "^I")
+        if (parser.numberNonBlank && line.isNotBlank() || parser.number) processedLine = "${lineNumber.value++}: $processedLine"
+        if (parser.showNonPrinting) {
+            processedLine = processedLine.map { char ->
+                if (char.isNonPrinting()) "^${convertNonPrinting(char)}" else char.toString()
+            }.joinToString("")
+        }
+        println(processedLine)
     }
 
     @OptIn(ExperimentalStdlibApi::class)
@@ -150,5 +171,6 @@ class Cat() {
 
 fun main(args: Array<String>) {
     val app = Cat()
-    app.main(arrayOf("-tn", "-A", "data/files.txt", "data/files.txt"))
+//    app.main(arrayOf("-tn", "-A", "data/files.txt", "data/files.txt"))
+    app.main(args)
 }
