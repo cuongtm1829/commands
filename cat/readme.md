@@ -26,7 +26,7 @@
    ```
 3. Javaファイルソースコードをコンパイルする
    ```bash
-   kotlinc src/Cat.kt -include-runtime -d out/Cat.jar
+   kotlinc src/*.kt -include-runtime -d out/Cat.jar
    ```
 4. outフォルダーへ移動し、分析ファイルを指定し、プログラムを実行する
    ```bash
@@ -36,7 +36,7 @@
    例：
    ```bash
    cd out
-   java -jar Cat.jar data/files.txt -n
+   java -jar Cat.jar ../data/files.txt -n
    ```
 
 ## 工夫した点
