@@ -1,4 +1,4 @@
-# Cat Command Line Tool - Java Implementation
+# Cat Command Line Tool - Kotlin Implementation
 
 このリポジトリには、Unix コマンド ライン ツール「cat」の Kotlin 実装が含まれています。 「cat」ツールは、テキストファイルの内容を表示したり、ファイルを連結させたりするコマンドラインプログラムです。
 
