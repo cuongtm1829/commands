@@ -13,15 +13,15 @@ public class ApplicationTest {
     private final PrintStream standardOut = System.out;
     private final ByteArrayOutputStream outputStreamCaptor = new ByteArrayOutputStream();
 
-//    @BeforeEach
-//    public void setUp() {
-//        System.setOut(new PrintStream(outputStreamCaptor));
-//    }
-//
-//    @AfterEach
-//    public void tearDown() {
-//        System.setOut(standardOut);
-//    }
+    @BeforeEach
+    public void setUp() {
+        System.setOut(new PrintStream(outputStreamCaptor));
+    }
+
+    @AfterEach
+    public void tearDown() {
+        System.setOut(standardOut);
+    }
 
     @Test
     public void testOutputAllStatistic() {
@@ -98,9 +98,9 @@ public class ApplicationTest {
 
     @Test
     public void testBinaryFile() {
-        String[] args = {"bash.exe"};
+        String[] args = {"-lwmcL", "data/data.zip"};
         WC.main(args);
-        assertTrue(outputStreamCaptor.toString().contains("2594 data/data.txt"),
-                "Failed to handle argument with equal");
+        assertTrue(outputStreamCaptor.toString().contains("9 25 1325 1387 422 data/data.zip"),
+                "Failed to extrac binay file");
     }
 }
