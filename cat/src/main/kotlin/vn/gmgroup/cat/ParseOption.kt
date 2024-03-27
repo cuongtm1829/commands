@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) Artnet Gmsolution. All rights reserved.
+ *
+ * アプリケーションの標準的なオプションを抽出するクラス
+ */
+package vn.gmgroup.cat
+
 class ParseOption {
     var numberNonBlank: Boolean = false
     var showEnds: Boolean = false
@@ -30,7 +37,8 @@ class ParseOption {
                 showTabs = true
             }
             'T' -> showTabs = true
-            'u' -> {} // 無視
+            'u' -> {
+            } // 無視
             'v' -> showNonPrinting = true
             else -> {
                 throw Exception("Unknown option: -$option")
@@ -43,19 +51,20 @@ class ParseOption {
      * @param options 文字列の配列。各文字列はコマンドラインオプション。
      */
     fun parseOptions(options: Array<String>) {
-        if(options.contains("--help")) {
+        if (options.contains("--help")) {
             help = true
             return
         }
 
-        if(options.contains("--version")) {
+        if (options.contains("--version")) {
             version = true
             return
         }
         try {
+            val rawFilePaths: MutableList<String> = mutableListOf()
             options.forEach { option ->
                 if (!option.startsWith("-")) {
-                    filePaths.add(option)
+                    rawFilePaths.add(option)
                 } else {
                     when {
                         option.startsWith("--") -> {
@@ -84,8 +93,10 @@ class ParseOption {
                     }
                 }
             }
+
+            filePaths.addAll(FilepathHandler.searchFilesByMultipleGlobPatterns(rawFilePaths.toTypedArray()))
         } catch (e: Exception) {
-            println("Caught an exception: ${e.message}")
+            errorMessage = e.message;
         }
 
         // -bは-nを上書きする

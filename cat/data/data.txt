@@ -1,5 +1,8 @@
+
 TXT test file
+
 Purpose: Provide example of this file type
+
 Document file type: TXT
 Version: 1.0
 Remark:
@@ -19,3 +22,4 @@ Text of Example content: Wikipedia (https://en.wikipedia.org/wiki/John_Doe)
 License: Attribution-ShareAlike 4.0 (https://creativecommons.org/licenses/by-sa/4.0/)
 
 Feel free to use and share the file according to the license above.
+File 1

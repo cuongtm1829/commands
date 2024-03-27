@@ -1,6 +1,13 @@
-test
-
-aaaa
+TXT test file
 
 
-Tes
+
+Purpose: Provide example of this file type
+
+
+
+Document file 		type: TXT
+
+Version: 1.0
+Remark:
+File 2

@@ -1,3 +1,10 @@
+/*
+ * Copyright (c) Artnet Gmsolution. All rights reserved.
+ *
+ * コマンド引数に従ってファイルの内容を表示するクラス
+ */
+package vn.gmgroup.cat
+
 import java.io.File
 
 /**
@@ -61,14 +68,18 @@ class Cat() {
             val lastLineWasBlank = MutableRef(false)
 
             for (line in lines) {
-                if (lastLineWasBlank.value) continue
                 printLineContent(line, parser, lastLineWasBlank, lineNumber)
-
             }
         }
     }
 
-    private fun printLineContent(line: String, parser: ParseOption, lastLineWasBlank: MutableRef<Boolean>, lineNumber: MutableRef<Int>) {
+    @OptIn(ExperimentalStdlibApi::class)
+    private fun printLineContent(
+        line: String,
+        parser: ParseOption,
+        lastLineWasBlank: MutableRef<Boolean>,
+        lineNumber: MutableRef<Int>
+    ) {
         if (parser.squeezeBlank && line.isBlank()) {
             if (lastLineWasBlank.value) return
             lastLineWasBlank.value = true
@@ -79,44 +90,41 @@ class Cat() {
         var processedLine = line
         if (parser.showEnds) processedLine += "$"
         if (parser.showTabs) processedLine = processedLine.replace("\t", "^I")
-        if (parser.numberNonBlank && line.isNotBlank() || parser.number) processedLine = "${lineNumber.value++}: $processedLine"
+        if (parser.numberNonBlank && line.isNotBlank() || parser.number) processedLine =
+            "${lineNumber.value++}: $processedLine"
         if (parser.showNonPrinting) {
             processedLine = processedLine.map { char ->
-                if (char.isNonPrinting()) "^${convertNonPrinting(char)}" else char.toString()
+                convertCharAndNonPrinting(char)
             }.joinToString("")
         }
         println(processedLine)
     }
 
-    /**
-     * 文字が制御文字であるかどうかをチェックする。
-     * 制御文字とは、ASCIIコードで32未満の文字または127（DEL）の文字のことを指す。
-     * この関数は、文字が制御文字である場合にtrueを返し、そうでない場合はfalseを返す。
-     *
-     * @return Boolean 文字が制御文字であればtrue、そうでなければfalse。
-     */
-    @OptIn(ExperimentalStdlibApi::class)
-    fun Char.isNonPrinting(): Boolean = this.code < 32 || this.code == 127
 
     /**
      * 指定された文字が制御文字またはDELキャラクターである場合、可視化するためのキャレット表記に変換します。
-     * ASCIIの制御文字（コードポイントが0から31まで）は、それぞれに64を加えたASCII文字にキャレット(^)を前置して表示します。
-     * DELキャラクター（コードポイント127）は"^?"に変換されます。それ以外の文字はそのままの形で返されます。
+     * TABとLFD意外に、ASCIIの制御文字（コードポイントが0から31まで）は、それぞれに64を加えたASCII文字にキャレット(^)を前置して表示します。
+     * 制御
      *
      * @param char 変換対象の文字。
      * @return 変換後の文字列。
      */
     @OptIn(ExperimentalStdlibApi::class)
-    fun convertNonPrinting(char: Char): String {
+    fun convertCharAndNonPrinting(char: Char): String {
         return when (char.code) {
-            in 0..31 -> "^${(char + 64).toChar()}" //　制御文字をキャレット表記に変換する
-            127 -> DEL_CHARACTER
+            in 0..31 -> when (char) {
+                '\t' -> char.toString() // TAB
+                '\n' -> char.toString() // LFD
+                else -> "^${(char.code + 64).toChar()}" //制御文字
+            }
+            in 127..159 -> "M-${(char.code - 128).toChar()}" //制御文字
             else -> char.toString()
         }
     }
 
     private fun showHelp() {
-        println("""NAME
+        println(
+"""NAME
        cat - concatenate files and print on the standard output
 
 SYNOPSIS
@@ -146,11 +154,12 @@ DESCRIPTION
        --help display this help and exit
        --version
               output version information and exit
-""")
+"""
+        )
     }
 
     private fun showVersion() {
-        println("wc (GMS) version 1.0")
+        println("cat (GMS) version 1.0")
     }
 }
 

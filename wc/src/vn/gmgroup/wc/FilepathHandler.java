@@ -29,8 +29,9 @@ public class FilepathHandler {
             // Globパターンであるかどうかをチェックする
             if (rawFilePath.contains("*") || rawFilePath.contains("?") || rawFilePath.contains("[") || rawFilePath.contains("{")) {
                 PathMatcher matcher;
-                String basePart = rawFilePath.substring(0, rawFilePath.lastIndexOf(File.separator) > 0 ?
-                        rawFilePath.lastIndexOf(File.separator) : rawFilePath.length());
+                String normalizedPattern = rawFilePath.replace("\\", "/");
+                String basePart = normalizedPattern.substring(0, rawFilePath.lastIndexOf("/") > 0 ?
+                        rawFilePath.lastIndexOf("/") : rawFilePath.length());
 
                 Path path = Paths.get(basePart);
                 Path basePath;
@@ -38,7 +39,7 @@ public class FilepathHandler {
 
                 if (path.isAbsolute()) {
                     basePath = path;
-                    pattern = "" + rawFilePath.replaceFirst(basePart, "");
+                    pattern = "" + normalizedPattern.replaceFirst(basePart, "");
                 } else {
                     basePath = Paths.get(".");
                     pattern = rawFilePath;
