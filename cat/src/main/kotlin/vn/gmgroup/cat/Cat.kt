@@ -6,6 +6,8 @@
 package vn.gmgroup.cat
 
 import java.io.File
+import java.io.FileNotFoundException
+import java.nio.file.InvalidPathException
 
 /**
  * メイン処理クラス
@@ -48,16 +50,21 @@ class Cat() {
 
         } else {
             for (filePath in filePaths) {
-                val file = File(filePath)
-                if (file.exists()) {
-                    try {
-                        printFileContent(file, option)
-                    } catch (ex: Exception) {
-                        println("$filePath: Unknown error when reading file")
+                var errorMessage = "";
+                try {
+                    val file = File(filePath)
+                    printFileContent(file, option)
+                } catch (e: Exception) {
+                    errorMessage = when (e) {
+                        is FileNotFoundException, is NoSuchFileException, is InvalidPathException ->
+                            "The file or folder was not found: $filePath"
+                        is AccessDeniedException, is SecurityException ->
+                            "You do not have access to the file: $filePath"
+                        else ->
+                            "Unknown error processing file: " + filePath + "\n" + e.message
                     }
-                } else {
-                    println("$filePath: No such file or directory")
                 }
+                println(errorMessage);
             }
         }
     }
