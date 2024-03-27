@@ -13,17 +13,17 @@ class Cat() {
         val option = ParseOption()
         option.parseOptions(args)
 
-        if(option.errorMessage != null) {
+        if (option.errorMessage != null) {
             println(option.errorMessage)
             return
         }
 
-        if(option.help) {
+        if (option.help) {
             showHelp();
             return;
         }
 
-        if(option.version) {
+        if (option.version) {
             showVersion();
             return;
         }
@@ -31,7 +31,7 @@ class Cat() {
         val filePaths = option.filePaths
         // ファイルパスが渡さないときに、Standard Inputからデータを読み込む
         val isStandardIn = filePaths.size == 0;
-        if(isStandardIn) {
+        if (isStandardIn) {
             val lineNumber = MutableRef(1)
             val lastLineWasBlank = MutableRef(false)
             while (true) {
@@ -61,7 +61,7 @@ class Cat() {
             val lastLineWasBlank = MutableRef(false)
 
             for (line in lines) {
-                if(lastLineWasBlank.value) continue
+                if (lastLineWasBlank.value) continue
                 printLineContent(line, parser, lastLineWasBlank, lineNumber)
 
             }
