@@ -19,20 +19,31 @@ public class FilepathHandler {
      */
     private static List<String> findFilesWithGlobPattern(String rawFilePath) {
         List<String> result = new ArrayList<>();
-        PathMatcher matcher;
-        Path basePath = Paths.get(".");
 
         try {
-            // Check if input contains glob pattern characters
+            PathMatcher matcher;
+            Path path = Paths.get(rawFilePath);
+            Path basePath;
+            String pattern;
+
+            // Globパターンであるかどうかをチェックする
             if (rawFilePath.contains("*") || rawFilePath.contains("?") || rawFilePath.contains("[") || rawFilePath.contains("{")) {
-                matcher = FileSystems.getDefault().getPathMatcher("glob:" + rawFilePath);
+                if(path.isAbsolute()){
+                    basePath = path.getParent();
+                    pattern = "" + path.getFileName();
+                } else {
+                    basePath = Paths.get(".") ;
+                    pattern = rawFilePath;
+                }
+
+                matcher = FileSystems.getDefault().getPathMatcher("glob:" + pattern);
 
                 try (Stream<Path> stream = Files.walk(basePath)) {
                     List<String> matches = stream
                             .filter(Files::isRegularFile)
                             .map(basePath::relativize)
                             .filter(matcher::matches)
-                            .map(Path::toString)
+                            .map(foundPath-> basePath.resolve(foundPath).toString())
                             .collect(Collectors.toList());
 
                     if (!matches.isEmpty()) {
