@@ -1,4 +1,9 @@
-package gm;
+/*
+ * Copyright (c) Artnet Gmsolution. All rights reserved.
+ *
+ * ファイルを解析するクラス
+ */
+package vn.gmgroup.wc;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -16,7 +21,8 @@ public class FileAnalyzer {
 
     /**
      * アプリケーションの標準オプションとファイルパスを渡し、オプションの指定に従う解析処理を行う
-     * @param option アプリケーションの標準オプション {@code gm.ParseOption}
+     *
+     * @param option     アプリケーションの標準オプション {@code vm.gmgroup.wc.ParseOption}
      * @param filePathIn 解析されるファイルのパス {@code String}
      */
     public FileAnalyzer(ParseOption option, String filePathIn) {
@@ -27,8 +33,9 @@ public class FileAnalyzer {
             return;
         }
 
-        Path path = Paths.get(this.filePath);
         try {
+            Path path = Paths.get(this.filePath);
+
             if (option.countLines) {
                 lines = countLines(path);
             }
@@ -44,19 +51,18 @@ public class FileAnalyzer {
             if (option.findMaxLineLength) {
                 maxLineLength = maxLineLength(path);
             }
-
-        } catch (IOException e) {
-            if(e instanceof FileNotFoundException || e instanceof NoSuchFileException) {
-                errorMessage = "The file or folder was not found: " + this.filePath;
-            } else {
-                errorMessage = "Unknown error processing file: " + this.filePath + "\n";
-                errorMessage += e.getMessage();
-            }
+        } catch (FileNotFoundException | NoSuchFileException | InvalidPathException e) {
+            errorMessage = "The file or folder was not found: " + this.filePath;
+        } catch (AccessDeniedException | SecurityException e) {
+            errorMessage = "You do not have access to the file: " + this.filePath;
+        } catch (Exception e) {
+            errorMessage = "Unknown error processing file: " + this.filePath + "\n";
+            errorMessage += e.getMessage();
         }
     }
 
     private long countLines(Path path) throws IOException {
-        return Files.lines(path).count();
+        return Files.lines(path, StandardCharsets.ISO_8859_1).count();
     }
 
     private long countWords(Path path) throws IOException {
@@ -70,7 +76,7 @@ public class FileAnalyzer {
     }
 
     private long countCharacters(Path path) throws IOException {
-        return new String(Files.readAllBytes(path), StandardCharsets.UTF_8).length();
+        return new String(Files.readAllBytes(path), StandardCharsets.ISO_8859_1).length();
     }
 
     private int maxLineLength(Path path) throws IOException {

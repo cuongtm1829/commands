@@ -1,4 +1,9 @@
-package gm;
+/*
+ * Copyright (c) Artnet Gmsolution. All rights reserved.
+ *
+ * LinuxのWCコマンドの機能を実装するクラス
+ */
+package vn.gmgroup.wc;
 
 import java.util.Arrays;
 
@@ -18,7 +23,7 @@ public class WC {
 
     private static void run(String[] args) {
         ParseOption option = new ParseOption(args);
-        if(option.errorMessage != null) {
+        if (option.errorMessage != null) {
             System.out.println(option.errorMessage);
             return;
         }

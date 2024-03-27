@@ -1,4 +1,9 @@
-package gm;
+/*
+ * Copyright (c) Artnet Gmsolution. All rights reserved.
+ *
+ * 解析結果を表示するクラス
+ */
+package vn.gmgroup.wc;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +19,7 @@ public class DisplayResult {
     /**
      * 解析結果を表示する処理クラスのコンストラクタ。
      *
-     * @param option アプリケーションの標準オプション {@code gm.ParseOption}
+     * @param option アプリケーションの標準オプション {@code vm.gmgroup.wc.ParseOption}
      */
     public DisplayResult(ParseOption option) {
         this.option = option;
@@ -23,7 +28,7 @@ public class DisplayResult {
     /**
      * アプリケーションの標準オプションに従い、解析結果を表示する
      *
-     * @param fileAnalyzer アプリケーションの標準オプション {@code gm.FileAnalyzer}
+     * @param fileAnalyzer アプリケーションの標準オプション {@code vm.gmgroup.wc.FileAnalyzer}
      */
     public void printAndAggregateResult(FileAnalyzer fileAnalyzer) {
         this.print(fileAnalyzer);

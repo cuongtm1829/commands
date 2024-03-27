@@ -1,6 +1,11 @@
-package gm;
+/*
+ * Copyright (c) Artnet Gmsolution. All rights reserved.
+ *
+ * 文字列のファイルパスからGlobパータンを考慮し、ファイルパスを抽出するクラス
+ */
+package vn.gmgroup.wc;
 
-import java.io.IOException;
+import java.io.File;
 import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,18 +26,21 @@ public class FilepathHandler {
         List<String> result = new ArrayList<>();
 
         try {
-            PathMatcher matcher;
-            Path path = Paths.get(rawFilePath);
-            Path basePath;
-            String pattern;
-
             // Globパターンであるかどうかをチェックする
             if (rawFilePath.contains("*") || rawFilePath.contains("?") || rawFilePath.contains("[") || rawFilePath.contains("{")) {
-                if(path.isAbsolute()){
-                    basePath = path.getParent();
-                    pattern = "" + path.getFileName();
+                PathMatcher matcher;
+                String basePart = rawFilePath.substring(0, rawFilePath.lastIndexOf(File.separator) > 0 ?
+                        rawFilePath.lastIndexOf(File.separator) : rawFilePath.length());
+
+                Path path = Paths.get(basePart);
+                Path basePath;
+                String pattern;
+
+                if (path.isAbsolute()) {
+                    basePath = path;
+                    pattern = "" + rawFilePath.replaceFirst(basePart, "");
                 } else {
-                    basePath = Paths.get(".") ;
+                    basePath = Paths.get(".");
                     pattern = rawFilePath;
                 }
 
@@ -43,7 +51,7 @@ public class FilepathHandler {
                             .filter(Files::isRegularFile)
                             .map(basePath::relativize)
                             .filter(matcher::matches)
-                            .map(foundPath-> basePath.resolve(foundPath).toString())
+                            .map(foundPath -> basePath.resolve(foundPath).toString())
                             .collect(Collectors.toList());
 
                     if (!matches.isEmpty()) {
@@ -53,7 +61,7 @@ public class FilepathHandler {
             }
             // Globパータンではない場合、ローファイルパスをそのまま返す
             result.add(rawFilePath);
-        } catch (Throwable ex) {
+        } catch (Exception ex) {
             result.add(rawFilePath);
         }
         return result;
@@ -61,7 +69,7 @@ public class FilepathHandler {
 
     public static List<String> findFiles(List<String> rawFilePaths) {
         List<String> result = new ArrayList<>();
-        for(String rawFilePath : rawFilePaths) {
+        for (String rawFilePath : rawFilePaths) {
             result.addAll(findFilesWithGlobPattern(rawFilePath));
         }
         return result;

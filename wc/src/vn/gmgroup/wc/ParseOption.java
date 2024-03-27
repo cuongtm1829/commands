@@ -1,4 +1,9 @@
-package gm;
+/*
+ * Copyright (c) Artnet Gmsolution. All rights reserved.
+ *
+ * アプリケーションの標準的なオプションを抽出するクラス
+ */
+package vn.gmgroup.wc;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -23,6 +28,7 @@ public class ParseOption {
 
     /**
      * コマンドライン引数を解析してアプリケーションの標準オプションを構成する。
+     *
      * @param args コマンドライン引数を表す {@code String} オブジェクトの配列
      */
     public ParseOption(String[] args) {
@@ -77,7 +83,7 @@ public class ParseOption {
                     findMaxLineLength = true;
                     break;
                 default:
-                    throw new Exception("Unknown option" + arg);
+                    throw new Exception("invalid option: " + arg);
             }
         } else {
             for (int i = 1; i < arg.length(); i++) {
@@ -98,7 +104,7 @@ public class ParseOption {
                         findMaxLineLength = true;
                         break;
                     default:
-                        throw new Exception("invalid option" + arg.charAt(i));
+                        throw new Exception("invalid option: " + arg.charAt(i));
                 }
             }
         }
@@ -122,12 +128,10 @@ public class ParseOption {
                 String[] fileNames = sb.split(NULL_CHARACTER);
                 filePaths.addAll(new ArrayList<>(Arrays.asList(fileNames)));
             }
+        } catch (FileNotFoundException e) {
+            throw new Exception("File not found when reading input: " + args);
         } catch (IOException e) {
-            if(e instanceof FileNotFoundException) {
-                throw new Exception("File not found when reading input: " + args);
-            } else {
-                throw new Exception("Unknown error when reading input: " + args);
-            }
+            throw new Exception("Unknown error when reading input: " + args);
         }
         return filePaths;
     }
