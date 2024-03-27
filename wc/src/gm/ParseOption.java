@@ -2,11 +2,12 @@ package gm;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class ParseOption {
     public boolean countLines = false;
@@ -25,6 +26,7 @@ public class ParseOption {
      * @param args コマンドライン引数を表す {@code String} オブジェクトの配列
      */
     public ParseOption(String[] args) {
+        List<String> rawFilePaths = new ArrayList<>();
         try {
             List<String> argsList = new ArrayList<>();
             for (String arg : args) {
@@ -36,14 +38,16 @@ public class ParseOption {
                 if (arg.equals("--files0-from")) {
                     files0FromFlag = true;
                     if (++i < argsList.size()) {
-                        filePaths = this.processFile0From(argsList.get(i));
+                        rawFilePaths.addAll(this.processFile0From(argsList.get(i)));
                     }
                 } else if (arg.startsWith("-")) {
                     parseOptions(arg);
                 } else {
-                    filePaths.add(arg);
+                    rawFilePaths.add(arg);
                 }
             }
+
+            filePaths = FilepathHandler.findFiles(rawFilePaths);
 
             //コマンドライン引数を渡さない場合、行数、ワード、バイト数を表示する
             if (!countLines && !countWords && !countCharacters && !countBytes && !findMaxLineLength) {
@@ -52,7 +56,6 @@ public class ParseOption {
         } catch (Exception ex) {
             this.errorMessage = ex.getMessage();
         }
-
     }
 
     private void parseOptions(String arg) throws Exception {
@@ -127,5 +130,15 @@ public class ParseOption {
             }
         }
         return filePaths;
+    }
+
+    public static List<Path> findFilesWithPattern(String directory, String pattern) throws IOException {
+        PathMatcher matcher = FileSystems.getDefault().getPathMatcher("glob:" + pattern);
+
+        try (Stream<Path> stream = Files.walk(Paths.get(directory))) {
+            return stream
+                    .filter(matcher::matches)
+                    .collect(Collectors.toList());
+        }
     }
 }
