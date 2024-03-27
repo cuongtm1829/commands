@@ -6,6 +6,7 @@
 package vn.gmgroup.wc;
 
 import java.io.*;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.util.ArrayList;
@@ -121,7 +122,7 @@ public class ParseOption {
                     filePaths.add(line);
                 }
             } else {
-                String sb = new String(Files.readAllBytes(Paths.get(args)), StandardCharsets.UTF_8);
+                String sb = new String(Files.readAllBytes(Paths.get(args)), Charset.defaultCharset());
 
 
                 // Nullキャラクターで文字列をファイルパスに分解する
