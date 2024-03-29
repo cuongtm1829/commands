@@ -20,7 +20,7 @@
 - 複数ファイルを結合し、表示まは、出力をサポート。コマンド引数例： file1.txt file2.txt　> out.txt
 - 既存のファイルに新しい内容の追加をサポート。コマンド引数例： file1.txt file2.txt　>> out.txt
 - BinaryファイルをCharとして表示
-- ファイルパスを指定しない場合、標準的な入力を表示。例：find *.txt | java -jar Cat.jar -n
+- ファイルパスを指定しない場合、標準入力を読み込む。例：find *.txt | java -jar Cat.jar -n
 - globパターンのファイル名（globパターンのフォルダ名をサポートしない）をサポート。例：data/*.txt (*/*.txtをサポートしない)
 
 ## 実行ガイド
