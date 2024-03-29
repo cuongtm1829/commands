@@ -1,4 +1,5 @@
 package test;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -8,6 +9,7 @@ import vn.gmgroup.wc.WC;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.PrintStream;
+
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ApplicationTest {
@@ -52,7 +54,7 @@ public class ApplicationTest {
     public void testCountLinesAndWords() {
         String[] args = {"-lw", "data/*.txt"};
         WC.main(args);
-        assertTrue(outputStreamCaptor.toString().contains("432 ."+ File.separator +"data"+ File.separator + "data.txt"),
+        assertTrue(outputStreamCaptor.toString().contains("432 ." + File.separator + "data" + File.separator + "data.txt"),
                 "Failed to read file with glob pattern");
     }
 

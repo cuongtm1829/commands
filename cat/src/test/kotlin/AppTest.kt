@@ -55,7 +55,7 @@ class AppTest {
         val app = Cat()
         app.main(arrayOf("-s", "data/files.txt"))
         assertTrue(outputStreamCaptor.toString().trim().contains("TXT test file" +
-                "\n\n" +
+                System.lineSeparator() + System.lineSeparator() +
                 "Purpose: Provide example of this file type"),
             "Failed show file with suppressing repeated empty output lines")
     }
