@@ -1,4 +1,4 @@
-package test;
+package vn.gmgroup.wc;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,7 +12,7 @@ import java.io.PrintStream;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class ApplicationTest {
+public class WCTest {
     private final PrintStream standardOut = System.out;
     private final ByteArrayOutputStream outputStreamCaptor = new ByteArrayOutputStream();
 

@@ -1,4 +1,4 @@
-/*
+package vn.gmgroup.cat/*
  * Copyright (c) Artnet Gmsolution. All rights reserved.
  *
  * テストクラス
@@ -6,12 +6,11 @@
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import vn.gmgroup.cat.Cat
 import java.io.ByteArrayOutputStream
 import java.io.PrintStream
 import kotlin.test.assertTrue
 
-class AppTest {
+class CatTest {
     private val standardOut = System.out
     private val outputStreamCaptor = ByteArrayOutputStream()
 
